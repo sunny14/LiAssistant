@@ -1,0 +1,23 @@
+{
+  "exceptionLogging": "CLOUD",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/script.storage",
+    "https://www.googleapis.com/auth/gmail.addons.execute",
+    "https://www.googleapis.com/auth/gmail.addons.current.message.metadata"
+  ],
+  "gmail": {
+    "name": "LinkedIn assistant",
+    "logoUrl": "https://pngimg.com/uploads/linkedIn/linkedIn_PNG39.png",
+    "contextualTriggers": [{
+      "unconditional": {},
+      "onTriggerFunction": "handleShowCard"
+    }],
+    "universalActions": [{
+      "text": "LinkedIn",
+      "openLink": "https://www.linkedin.com/"
+    }],
+    "openLinkUrlPrefixes": [
+      "https://www.linkedin.com"
+    ]
+  }
+}
