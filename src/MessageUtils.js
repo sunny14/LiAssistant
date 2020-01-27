@@ -43,14 +43,20 @@ function extractRecipients(message, optBlacklist) {
     return emails;
   }
 
-  var header = message.getTo()+' '+message.getCc()+' '+message.getFrom();
+  var header = /*message.getTo()+' '+message.getCc()+' '+*/message.getFrom();
   var records = header.split(/>/).filter(function(x) {return  x.length > 0;});
   const prefixRe  = /<\b[A-Z0-9._%+-]+@\b/gi;
   const postfixRe  = /(\.)+[A-Z]{2,6}\b/gi;
   var details = _.map(records, function (record) {
-      return record.replace(prefixRe, '"').replace(postfixRe, '"').replace('"gmail"', '');
+      return record
+          .replace(prefixRe, '"')
+          .replace(postfixRe, '"')
+          .replace('""', '"')
+          .replace('"gmail"', '');
   });
 
+  console.log("from: "+message.getFrom());
+ // console.log("to: "+message.getTo());
   console.log('DETAILS ARE: \n'+details);
 
   return details.sort();
