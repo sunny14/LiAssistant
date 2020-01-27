@@ -32,14 +32,46 @@ function getCurrentMessage(event) {
  * @return {string[]} email addresses
  */
 function extractRecipients(message, optBlacklist) {
-  var emails = collectEmails_(message);
-  emails = normalizeEmails_(emails);
-  emails = filterEmails_(emails);
-  if (!_.isEmpty(optBlacklist)) {
-    emails = _.difference(emails, optBlacklist);
+  function extractEmails() {
+    var emails = collectEmails_(message);
+    emails = normalizeEmails_(emails);
+    emails = filterEmails_(emails);
+    if (!_.isEmpty(optBlacklist)) {
+      emails = _.difference(emails, optBlacklist);
+    }
+
+    return emails;
   }
+
+  var companies = [];
+  var emails = extractEmails();
+  _.each(emails, function (email) {
+    companies.push(extractCompany(email));
+  });
+
+  var header = message.getFrom().trim();
+  var fullname = header.split(/\s+/).filter(function(x) {return  x.indexOf('@') === -1;});
+
+ /* if (names.length > 1) {
+    names.pop();
+    extract.name = names.join(" ").replace(/"/g, "");
+  }*/
+
+  console.log('NAMES ARE: \n'+fullname);
+  console.log('COMPANIES ARE: \n'+companies);
+
   return emails.sort();
 }
+
+function extractCompany(email) {
+  var company = email.split('@')[1].split(".")[0].trim();
+  if (company === 'gmail') {
+    return ''
+  }
+
+  return '"'+company+'"';
+}
+
 
 /**
  * extract name + last name from email
@@ -67,14 +99,6 @@ function extractDetails(emails) {
 
     var lastName = extractLastName(email);
 
-    function extractCompany(email) {
-      var company = email.split('@')[1].split(".")[0].trim();
-      if (company === 'gmail') {
-        return ''
-      }
-
-      return '"'+company+'"';
-    }
 
     var company = extractCompany(email);
     var fullName = name+' '+lastName;
