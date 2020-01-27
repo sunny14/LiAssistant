@@ -43,24 +43,17 @@ function extractRecipients(message, optBlacklist) {
     return emails;
   }
 
-  var companies = [];
-  var emails = extractEmails();
-  _.each(emails, function (email) {
-    companies.push(extractCompany(email));
+  var header = message.getTo()+' '+message.getCc()+' '+message.getFrom();
+  var records = header.split(/>/).filter(function(x) {return  x.length > 0;});
+  const prefixRe  = /<\b[A-Z0-9._%+-]+@\b/gi;
+  const postfixRe  = /(\.)+[A-Z]{2,6}\b/gi;
+  var details = _.map(records, function (record) {
+      return record.replace(prefixRe, '"').replace(postfixRe, '"').replace('"gmail"', '');
   });
 
-  var header = message.getFrom().trim();
-  var fullname = header.split(/\s+/).filter(function(x) {return  x.indexOf('@') === -1;});
+  console.log('DETAILS ARE: \n'+details);
 
- /* if (names.length > 1) {
-    names.pop();
-    extract.name = names.join(" ").replace(/"/g, "");
-  }*/
-
-  console.log('NAMES ARE: \n'+fullname);
-  console.log('COMPANIES ARE: \n'+companies);
-
-  return emails.sort();
+  return details.sort();
 }
 
 function extractCompany(email) {

@@ -13,9 +13,9 @@ var ActionHandlers = {
   showLIForm: function(e) {
     var settings = getSettingsForUser();
     var message = getCurrentMessage(e);
-    var emails = extractRecipients(message, settings.emailBlacklist);
+    var details = extractRecipients(message, settings.emailBlacklist);
     var opts = {
-      contactDetails: extractDetails(emails),
+      contactDetails: details,
       location: 'il',
     };
     var card = buildLICard(opts);
