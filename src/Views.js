@@ -19,7 +19,7 @@ function buildLICard(opts) {
     checkboxGroup.addItem( str, str, true);
 
     var suffix = '('+str+')';
-    if (keywordsParam != '')  {
+    if (keywordsParam !== '')  {
       suffix = ' OR '+suffix;
     }
     keywordsParam = keywordsParam+suffix;

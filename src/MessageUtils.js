@@ -68,12 +68,12 @@ function extractDetails(emails) {
     var lastName = extractLastName(email);
 
     function extractCompany(email) {
-      var company = email.split('@')[1].split(".")[0]
+      var company = email.split('@')[1].split(".")[0].trim();
       if (company === 'gmail') {
-        company = ''
+        return ''
       }
 
-      return company;
+      return '"'+company+'"';
     }
 
     var company = extractCompany(email);
