@@ -16,7 +16,7 @@ var ActionHandlers = {
     var emails = extractRecipients(message, settings.emailBlacklist);
     var opts = {
       contactDetails: extractDetails(emails),
-      location: 'Israel',
+      location: 'il',
     };
     var card = buildLICard(opts);
     return [card];

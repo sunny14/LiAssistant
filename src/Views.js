@@ -2,7 +2,8 @@
  * Builds a card that displays the search options for linkedin search.
  *
  * @param {Object} opts Parameters for building the card
- * @param {string[]} opts.emailAddresses - Email addresses of participants
+ * @param {string[]} opts.contactDetails - contactDetails of participants
+ * @param {string} opts.location
  * @return {Card}
  */
 function buildLICard(opts) {
@@ -10,19 +11,35 @@ function buildLICard(opts) {
       'Choose one or more recipients'
   );
 
+  var keywordsParam = '';
   var checkboxGroup = CardService.newSelectionInput()
       .setType(CardService.SelectionInputType.CHECK_BOX)
       .setFieldName('participants');
-  _.each(opts.emailAddresses, function(email) {
-    checkboxGroup.addItem(name+" "+lastName, email, true);
+  _.each(opts.contactDetails, function(str) {
+    checkboxGroup.addItem( str, str, true);
+
+    var suffix = '('+str+')';
+    if (keywordsParam != '')  {
+      suffix = ' OR '+suffix;
+    }
+    keywordsParam = keywordsParam+suffix;
   });
+
+  keywordsParam = keywordsParam.trim();
   participantSection.addWidget(checkboxGroup);
+
+  var  path = '/search/results/people/';
+  var params = '?facetGeoRegion=["'+opts.location+':0"]&keywords='+keywordsParam;
+
+  console.log('LI params: '+params);
+  var url = encodeURI('https://www.linkedin.com'+path+params);
+  console.log('final url is:\n '+url);
 
   participantSection.addWidget(
       CardService.newButtonSet().addButton(
           CardService.newTextButton()
               .setText('Find in LinkedIn')
-              .setOpenLink(CardService.newOpenLink().setUrl('https://www.linkedin.com/')
+              .setOpenLink(CardService.newOpenLink().setUrl(url)
               )
       )
   );
