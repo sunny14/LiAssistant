@@ -28,20 +28,73 @@ function cleanRecord(record) {
 
   return record
       .replace('""', '"')
-      .replace(/"gmail"|"jobvite"|-notifications/, '');
+      .replace(/"gmail"|"jobvite"|-notifications|wixshoutout|[^a-zA-Z]/g, ' ')
+      .trim();
 }
 
 function processRecord(record) {
 
-  const emailPrefixRe  = /<\b[A-Z0-9._%+-]+@\b/gi;
+  console.log('PROCESSING RECORD:\n'+record);
+
+  //parse details from title
+  const emailPrefixRe  = /\b[A-Za-z0-9._%+-]+@\b/gi;
   const emailPostfixRe  = /(\.)+[A-Z]{2,6}\b/gi;
 
   var recordWithCompany = record
       .replace(emailPrefixRe, '"')
       .replace(emailPostfixRe, '"');
 
-  return  cleanRecord(recordWithCompany);
+  recordWithCompany = cleanRecord(recordWithCompany);
 
+  console.log('RECORD AFTER CLEANING:\n>>>'+recordWithCompany+'<<<');
+
+  //if no details in title
+  if (recordWithCompany.length ===0)  {
+    //parse name and last name from email
+    recordWithCompany = getDetailsSingle(record);
+  }
+
+  console.log('RECORD AFTER PROCESSING:\n'+recordWithCompany);
+
+  return recordWithCompany;
+
+}
+
+function containsMultipleEmails(record) {
+  return record.match(/@/g).length > 1;
+}
+
+function getRecords(header) {
+  var records = header
+      .split(/>/)
+      .map(function (rec) {
+          return rec.trim();
+      })
+      .filter(function (x) {
+          return x.length > 0;
+    });
+
+/*  _.each(records, function (x) {
+    console.log('BEFORE MAPPING: rec:\n'+x);
+  });*/
+
+  records = _.flatMap(records, function (record) {
+    if (containsMultipleEmails(record))  {
+      var indexShtrudel =  record.indexOf('@');
+      var indexSpace = record.indexOf(' ', indexShtrudel);
+      var splittedRecord = [record.slice(0, indexSpace).trim(), record.slice(indexSpace).trim()];
+
+      return splittedRecord;
+    }
+
+    return record;
+  });
+
+/*  _.each(records, function (x) {
+    console.log('FINAL: rec:\n'+x);
+  });*/
+
+  return records;
 }
 
 /**
@@ -52,7 +105,7 @@ function processRecord(record) {
  * @return {string[]} email addresses
  */
 function extractRecipients(message, optBlacklist) {
-  function extractEmails() {
+  /*function extractEmails() {
     var emails = collectEmails_(message);
     emails = normalizeEmails_(emails);
     emails = filterEmails_(emails);
@@ -61,18 +114,23 @@ function extractRecipients(message, optBlacklist) {
     }
 
     return emails;
-  }
+  }*/
 
-  var header = /*message.getTo()+' '+message.getCc()+' '+*/message.getFrom();
-  var records = header.split(/>/).filter(function(x) {return  x.length > 0;});
+  console.log("from: "+message.getFrom());
+  console.log("to: "+message.getTo());
+  console.log("cc: "+message.getCc());
+  console.log("bcc: "+message.getBcc());
+
+  var headers = message.getTo()+' '+message.getCc()+' '+message.getFrom()+' '+message.getBcc();
+  console.log('HEADERS: \n'+headers);
+  var records = getRecords(headers);
   var details = _.map(records, function (record) {
       return processRecord(record);
   });
 
-  console.log("from: "+message.getFrom());
- // console.log("to: "+message.getTo());
   console.log('DETAILS ARE: \n'+details);
 
+  //TODO: remove duplicates
   return details.sort();
 }
 
@@ -86,6 +144,36 @@ function extractCompany(email) {
 }
 
 
+function getDetailsSingle(email) {
+
+  function extractName(email) {
+
+    const re = '[A-Za-z]+';
+    return email.split('@')[0].match(re)[0];
+
+  }
+
+  var name = extractName(email);
+
+  function extractLastName(email) {
+    return email.split('@')[0].split('.')[1];
+
+  }
+
+  var lastName = extractLastName(email);
+
+
+  var company = extractCompany(email);
+  var fullName = name+' '+lastName;
+  if (lastName === undefined)  {
+    fullName = name;
+  }
+
+  console.log('fullname = '+fullName+", company="+company);
+  return fullName+' '+company;
+}
+
+
 /**
  * extract name + last name from email
  * @param {string[]} emails
@@ -94,34 +182,7 @@ function extractCompany(email) {
 function extractDetails(emails) {
   var details  = [];
 
-  function getDetailsSingle(email) {
 
-    function extractName(email) {
-
-      const re = '[A-Za-z]+';
-      return email.split('@')[0].match(re)[0];
-
-    }
-
-    var name = extractName(email);
-
-    function extractLastName(email) {
-      return email.split('@')[0].split('.')[1];
-
-    }
-
-    var lastName = extractLastName(email);
-
-
-    var company = extractCompany(email);
-    var fullName = name+' '+lastName;
-    if (lastName === undefined)  {
-      fullName = name;
-    }
-
-    console.log('fullname = '+fullName+", company="+company);
-    return fullName+' '+company;
-  }
 
   for (email in emails)  {
     details.push(getDetailsSingle(emails[email]))
