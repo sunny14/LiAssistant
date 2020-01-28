@@ -24,6 +24,26 @@ function getCurrentMessage(event) {
   return GmailApp.getMessageById(messageId);
 }
 
+function cleanRecord(record) {
+
+  return record
+      .replace('""', '"')
+      .replace(/"gmail"|"jobvite"|-notifications/, '');
+}
+
+function processRecord(record) {
+
+  const emailPrefixRe  = /<\b[A-Z0-9._%+-]+@\b/gi;
+  const emailPostfixRe  = /(\.)+[A-Z]{2,6}\b/gi;
+
+  var recordWithCompany = record
+      .replace(emailPrefixRe, '"')
+      .replace(emailPostfixRe, '"');
+
+  return  cleanRecord(recordWithCompany);
+
+}
+
 /**
  * Retrieve the list of all participants in a conversation.
  *
@@ -45,16 +65,8 @@ function extractRecipients(message, optBlacklist) {
 
   var header = /*message.getTo()+' '+message.getCc()+' '+*/message.getFrom();
   var records = header.split(/>/).filter(function(x) {return  x.length > 0;});
-  const prefixRe  = /<\b[A-Z0-9._%+-]+@\b/gi;
-  const postfixRe  = /(\.)+[A-Z]{2,6}\b/gi;
   var details = _.map(records, function (record) {
-      return record
-          .replace(prefixRe, '"')
-          .replace(postfixRe, '"')
-          .replace('""', '"')
-          .replace('"gmail"', '')
-          .replace("jobvite", '')
-          .replace('-notifications', '');
+      return processRecord(record);
   });
 
   console.log("from: "+message.getFrom());
