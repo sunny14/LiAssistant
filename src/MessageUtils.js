@@ -52,7 +52,9 @@ function extractRecipients(message, optBlacklist) {
           .replace(prefixRe, '"')
           .replace(postfixRe, '"')
           .replace('""', '"')
-          .replace('"gmail"', '');
+          .replace('"gmail"', '')
+          .replace("jobvite", '')
+          .replace('-notifications', '');
   });
 
   console.log("from: "+message.getFrom());
