@@ -28,7 +28,7 @@ function cleanRecord(record) {
 
   return record
       .replace('""', '"')
-      .replace(/"gmail"|"jobvite"|-notifications|wixshoutout|[^a-zA-Z]/g, ' ')
+      .replace(/"gmail"|"jobvite"|-notifications|wixshoutout|calendar|schedule|[0-9\\.@<>,]/g, '')
       .trim();
 }
 
@@ -131,6 +131,7 @@ function extractRecipients(message, optBlacklist) {
   console.log('DETAILS ARE: \n'+details);
 
   //TODO: remove duplicates
+  //TODO: remove records that are included in other records
   return details.sort();
 }
 
