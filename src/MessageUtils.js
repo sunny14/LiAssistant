@@ -28,7 +28,7 @@ function cleanRecord(record) {
 
   return record
       .replace('""', '"')
-      .replace(/"gmail"|"jobvite"|-notifications|wixshoutout|calendar|schedule|[0-9\\.@<>,]/g, '')
+      .replace(/"gmail"|"jobvite"|-notifications|wixshoutout|calendar|schedule|private|[0-9\\.@<>,]/g, '')
       .trim();
 }
 

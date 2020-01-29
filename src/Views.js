@@ -1,4 +1,49 @@
 /**
+ * creates 'keywords' LinkedIn url parameter
+ * @param opts
+ * @return {string} 'keywords' parameter
+ */
+function getKeywordsParam(opts) {
+  var keywordsParam='';
+  _.each(opts.contactDetails, function (str) {
+    var suffix = '(' + str + ')';
+    if (keywordsParam !== '') {
+      suffix = ' OR ' + suffix;
+    }
+    keywordsParam = keywordsParam + suffix;
+  });
+  keywordsParam = keywordsParam.trim();
+  return keywordsParam;
+}
+
+/**
+ * creates parameters for LinkedIn url
+ * @param opts
+ * @return {string} parameters for LinkedIn url
+ */
+function getParams(opts) {
+  var keywordsParam = getKeywordsParam(opts);
+  var params = '?facetGeoRegion=["' + opts.location + ':0"]&keywords=' + keywordsParam;
+  console.log('LI params: ' + params);
+  return params;
+}
+
+/**
+ * creates checkbox group with search details
+ * @param opts
+ * @return {*}
+ */
+function createCheckboxGroup(opts) {
+  var checkboxGroup = CardService.newSelectionInput()
+      .setType(CardService.SelectionInputType.CHECK_BOX)
+      .setFieldName('participants');
+  _.each(opts.contactDetails, function (str) {
+    checkboxGroup.addItem(str, str, true);
+  });
+  return checkboxGroup;
+}
+
+/**
  * Builds a card that displays the search options for linkedin search.
  *
  * @param {Object} opts Parameters for building the card
@@ -10,28 +55,11 @@ function buildLICard(opts) {
   var participantSection = CardService.newCardSection().setHeader(
       'Choose one or more recipients'
   );
-
-  var keywordsParam = '';
-  var checkboxGroup = CardService.newSelectionInput()
-      .setType(CardService.SelectionInputType.CHECK_BOX)
-      .setFieldName('participants');
-  _.each(opts.contactDetails, function(str) {
-    checkboxGroup.addItem( str, str, true);
-
-    var suffix = '('+str+')';
-    if (keywordsParam !== '')  {
-      suffix = ' OR '+suffix;
-    }
-    keywordsParam = keywordsParam+suffix;
-  });
-
-  keywordsParam = keywordsParam.trim();
+  var checkboxGroup = createCheckboxGroup(opts);
   participantSection.addWidget(checkboxGroup);
 
+  var params = getParams(opts);
   var  path = '/search/results/people/';
-  var params = '?facetGeoRegion=["'+opts.location+':0"]&keywords='+keywordsParam;
-
-  console.log('LI params: '+params);
   var url = encodeURI('https://www.linkedin.com'+path+params);
   console.log('final url is:\n '+url);
 
