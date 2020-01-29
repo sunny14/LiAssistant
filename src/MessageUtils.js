@@ -98,6 +98,26 @@ function getRecords(header) {
 }
 
 /**
+ * removes duplicates
+ * removes records that are included in other records
+ * @param details
+ * @return {*}
+ */
+function removeIncludedStrings(details) {
+  return details.filter(function (rec1) {
+    var isUnique = true;
+    _.each(details, function (rec2) {
+      if (details.indexOf(rec1) != details.indexOf(rec2) && rec2.indexOf(rec1) > -1 ) {
+        isUnique = false;
+        console.log(rec2+' includes '+rec1+', \n'+rec1+' is not unique')
+      }
+    });
+
+    return isUnique;
+  });
+}
+
+/**
  * Retrieve the list of all participants in a conversation.
  *
  * @param {Message} message - Gmail message to extract from
@@ -130,8 +150,8 @@ function extractRecipients(message, optBlacklist) {
 
   console.log('DETAILS ARE: \n'+details);
 
-  //TODO: remove duplicates
-  //TODO: remove records that are included in other records
+  details = removeIncludedStrings(details);
+
   return details.sort();
 }
 
