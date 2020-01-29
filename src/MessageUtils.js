@@ -51,7 +51,7 @@ function processRecord(record) {
   //if no details in title
   if (recordWithCompany.length ===0)  {
     //parse name and last name from email
-    recordWithCompany = getDetailsSingle(record);
+    recordWithCompany = cleanRecord(getDetailsSingle(record));
   }
 
   console.log('RECORD AFTER PROCESSING:\n'+recordWithCompany);

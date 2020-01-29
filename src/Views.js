@@ -43,6 +43,15 @@ function createCheckboxGroup(opts) {
   return checkboxGroup;
 }
 
+function createText(opts) {
+  var text = '';
+  _.each(opts.contactDetails, function (str) {
+    text = text+'\n'+str;
+  });
+
+  return text;
+}
+
 /**
  * Builds a card that displays the search options for linkedin search.
  *
@@ -55,8 +64,15 @@ function buildLICard(opts) {
   var participantSection = CardService.newCardSection().setHeader(
       'Choose one or more recipients'
   );
-  var checkboxGroup = createCheckboxGroup(opts);
-  participantSection.addWidget(checkboxGroup);
+  /*var checkboxGroup = createCheckboxGroup(opts);
+  participantSection.addWidget(checkboxGroup);*/
+
+  participantSection.addWidget(
+      CardService.newTextParagraph().setText(createText(opts))
+       /*       .setText('Find in LinkedIn')
+              .setOpenLink(CardService.newOpenLink().setUrl(url)
+      )*/
+  );
 
   var params = getParams(opts);
   var  path = '/search/results/people/';
