@@ -28,7 +28,7 @@ function cleanRecord(record) {
 
   return record
       .replace('""', '"')
-      .replace(/"gmail"|"jobvite"|-notifications|wixshoutout|calendar|schedule|private|[0-9\\.@<>,]/g, '')
+      .replace(/"gmail"|"jobvite"|-notifications|wixshoutout|calendar|schedule|private|no[.]{0,1}reply|[0-9\\.@<>,-]/g, '')
       .trim();
 }
 
@@ -36,23 +36,38 @@ function processRecord(record) {
 
   console.log('PROCESSING RECORD:\n'+record);
 
-  //parse details from title
-  const emailPrefixRe  = /\b[A-Za-z0-9._%+-]+@\b/gi;
-  const emailPostfixRe  = /(\.)+[A-Z]{2,6}\b/gi;
+  //if no details in title
+  if (record.trim().split(' ').length === 1)  {
+    //parse name and last name from email
+    recordWithCompany = cleanRecord(getDetailsSingle(record));
+  }
+  else {
 
-  var recordWithCompany = record
-      .replace(emailPrefixRe, '"')
-      .replace(emailPostfixRe, '"');
+    //parse details from title
+    const emailPrefixRe = /\b[A-Za-z0-9._%+-]+@\b/gi;
+    const emailPostfixRe = /(\.)+[A-Z]{2,6}\b/gi;
+
+    var recordWithCompany = record
+        .replace(emailPrefixRe, '"')
+        .replace(emailPostfixRe, '"');
+  }
 
   recordWithCompany = cleanRecord(recordWithCompany);
 
   console.log('RECORD AFTER CLEANING:\n>>>'+recordWithCompany+'<<<');
 
-  //if no details in title
-  if (recordWithCompany.length ===0)  {
-    //parse name and last name from email
-    recordWithCompany = cleanRecord(getDetailsSingle(record));
-  }
+
+
+  recordWithCompany = recordWithCompany.replace(/\b[a-zA-Z]/, function(x) {
+        return x.toUpperCase();
+  });
+
+  recordWithCompany = recordWithCompany.replace(/\s[a-zA-Z]/, function(x) {
+    return x.toUpperCase();
+  });
+  recordWithCompany = recordWithCompany.replace(/\s"[a-zA-Z]/, function(x) {
+    return x.toUpperCase();
+  });
 
   console.log('RECORD AFTER PROCESSING:\n'+recordWithCompany);
 
@@ -107,7 +122,7 @@ function removeIncludedStrings(details) {
   return details.filter(function (rec1) {
     var isUnique = true;
     _.each(details, function (rec2) {
-      if (details.indexOf(rec1) != details.indexOf(rec2) && rec2.indexOf(rec1) > -1 ) {
+      if (details.indexOf(rec1) !== details.indexOf(rec2) && rec2.indexOf(rec1) > -1 ) {
         isUnique = false;
         console.log(rec2+' includes '+rec1+', \n'+rec1+' is not unique')
       }
@@ -120,11 +135,11 @@ function removeIncludedStrings(details) {
 /**
  * Retrieve the list of all participants in a conversation.
  *
- * @param {Message} message - Gmail message to extract from
+ * @param {string} headers - Gmail message to extract from
  * @param {string[]} optBlacklist - Array of emails to exclude
  * @return {string[]} email addresses
  */
-function extractRecipients(message, optBlacklist) {
+function extractRecipients(headers, optBlacklist) {
   /*function extractEmails() {
     var emails = collectEmails_(message);
     emails = normalizeEmails_(emails);
@@ -136,12 +151,6 @@ function extractRecipients(message, optBlacklist) {
     return emails;
   }*/
 
-  console.log("from: "+message.getFrom());
-  console.log("to: "+message.getTo());
-  console.log("cc: "+message.getCc());
-  console.log("bcc: "+message.getBcc());
-
-  var headers = message.getTo()+' '+message.getCc()+' '+message.getFrom()+' '+message.getBcc();
   console.log('HEADERS: \n'+headers);
   var records = getRecords(headers);
   var details = _.map(records, function (record) {

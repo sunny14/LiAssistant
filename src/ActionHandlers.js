@@ -13,7 +13,12 @@ var ActionHandlers = {
   showLIForm: function(e) {
     var settings = getSettingsForUser();
     var message = getCurrentMessage(e);
-    var details = extractRecipients(message, settings.emailBlacklist);
+    console.log("from: "+message.getFrom());
+    console.log("to: "+message.getTo());
+    console.log("cc: "+message.getCc());
+    console.log("bcc: "+message.getBcc());
+    var headers = message.getTo()+' '+message.getCc()+' '+message.getFrom()+' '+message.getBcc();
+    var details = extractRecipients(headers, settings.emailBlacklist);
     var opts = {
       contactDetails: details,
       location: 'il',
