@@ -47,7 +47,7 @@ function gastTestRunner() {
     test('parse title: <peter.howarddddd@apple.com> <peter.howard@apple.com>', function (t) {
         var header = '<peter.howarddddd@apple.com> <peter.howard@apple.com>';
         var result = extractRecipients(header).sort().toString();
-        var resultExpected = ['Peter Howarddddd Apple','Peter Howard Apple'].sort().toString();
+        var resultExpected = ['Peter Howarddddd "Apple"','Peter Howard "Apple"'].sort().toString();
         t.ok(result===resultExpected, '<peter.howarddddd@apple.com> <peter.howard@apple.com>');
     });
 

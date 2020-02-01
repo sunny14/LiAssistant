@@ -198,7 +198,7 @@ function parseEmail(email) {
     fullName = name;
   }
 
-  console.log('fullname = '+fullName+", company="+company);
+  console.log('fullname = '+fullName+', company="'+company+'"');
   return fullName+' '+company;
 }
 
@@ -272,15 +272,3 @@ function filterEmails_(emailAddresses) {
   });
 }
 
-/*suite('[test][User][integrations]', () => {
-  test('parse jane.kelly@jpmorgan.com', async (done) => {
-    const email = 'jane.kelly@jpmorgan.com';
-
-    var details = extractDetails([email])[0];
-
-    /!*expect(details.name).to.equal('jane');
-    expect(details.lastName).to.equal('kelly');
-    expect(details.currentCompany).to.equal('jpmorgan')*!/
-
-  });
-})//end of suite*/
