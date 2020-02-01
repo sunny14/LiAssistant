@@ -28,7 +28,7 @@ function cleanRecord(record) {
 
   return record
       .replace('""', '"')
-      .replace(/"gmail"|"jobvite"|-notifications|wixshoutout|calendar|schedule|private|no[.]{0,1}reply|[0-9\\.@<>,-]/g, '')
+      .replace(/"gmail"|"jobvite"|-notifications|wixshoutout|calendar|schedule|private|no-reply|noreply|[0-9\\.@<>,-]/g, '')
       .trim();
 }
 
@@ -39,7 +39,7 @@ function processRecord(record) {
   //if no details in title
   if (record.trim().split(' ').length === 1)  {
     //parse name and last name from email
-    recordWithCompany = cleanRecord(getDetailsSingle(record));
+    recordWithCompany = parseEmail(record);
   }
   else {
 
@@ -174,12 +174,11 @@ function extractCompany(email) {
 }
 
 
-function getDetailsSingle(email) {
+function parseEmail(email) {
 
   function extractName(email) {
 
-    const re = '[A-Za-z]+';
-    return email.split('@')[0].match(re)[0];
+    return email.split('@')[0].match(/[A-Za-z-_]+/)[0];
 
   }
 
@@ -215,7 +214,7 @@ function extractDetails(emails) {
 
 
   for (email in emails)  {
-    details.push(getDetailsSingle(emails[email]))
+    details.push(parseEmail(emails[email]))
   }
 
   console.log('all extracted data: \n'+details);

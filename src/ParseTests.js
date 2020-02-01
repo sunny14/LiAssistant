@@ -34,12 +34,22 @@ function gastTestRunner() {
     /**
      * eliminate duplicates, eliminate included records
      */
-   /* test('parse title: <peter.howarddddd@apple.com> <peter.howard@apple.com> <no-reply@apple.com>', function (t) {
-        var header = '<peter.howarddddd@apple.com> <peter.howard@apple.com> <no-reply@apple.com>';
-        var result = extractRecipients(header);
-        var resultExpected = ['Peter Howarddddd Apple','Peter Howard Apple'];
-        t.equal(result, resultExpected, '<peter.howarddddd@apple.com> <peter.howard@apple.com> <no-reply@apple.com>');
-    });*/
+    test('parse title: <peter.howard@apple.com> <no-reply@apple.com>', function (t) {
+        var header = '<peter.howard@apple.com> <no-reply@apple.com>';
+        var result = extractRecipients(header).sort().toString();
+        var resultExpected = ['Peter Howard "Apple"'].sort().toString();
+        t.ok(result===resultExpected, '<peter.howard@apple.com> <no-reply@apple.com>');
+    });
+
+    /**
+     * eliminate only unnesessary duplicates
+     */
+    test('parse title: <peter.howarddddd@apple.com> <peter.howard@apple.com>', function (t) {
+        var header = '<peter.howarddddd@apple.com> <peter.howard@apple.com>';
+        var result = extractRecipients(header).sort().toString();
+        var resultExpected = ['Peter Howarddddd Apple','Peter Howard Apple'].sort().toString();
+        t.ok(result===resultExpected, '<peter.howarddddd@apple.com> <peter.howard@apple.com>');
+    });
 
     /**
      * if we have the only one record with company name - present company
