@@ -61,9 +61,7 @@ function createText(opts) {
  * @return {Card}
  */
 function buildLICard(opts) {
-  var participantSection = CardService.newCardSection().setHeader(
-      'Choose one or more recipients'
-  );
+  var participantSection = CardService.newCardSection()
   /*var checkboxGroup = createCheckboxGroup(opts);
   participantSection.addWidget(checkboxGroup);*/
 

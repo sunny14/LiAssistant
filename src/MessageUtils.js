@@ -28,7 +28,7 @@ function cleanRecord(record) {
 
   return record
       .replace('""', '"')
-      .replace(/"gmail"|"jobvite"|-notifications|wixshoutout|calendar|schedule|private|no-reply|noreply|[0-9\\.@<>,-]/g, '')
+      .replace(/"gmail"|"jobvite"|-notifications|wixshoutout|calendar|schedule|private|no-reply|noreply|recruitment|[0-9\\.@<>,-]/g, '')
       .trim();
 }
 
@@ -266,6 +266,9 @@ function normalizeEmails_(emailAddresses) {
  * @return {string[]}
  */
 function filterEmails_(emailAddresses) {
+
+  //TODO: filter effective user
+  // Session.getEffectiveUser().getEmail
   var re = /(.*no-reply.*|.*noreply.*|.*@docs.google.com)/;
   return _.reject(emailAddresses, function(email) {
     return re.test(email);

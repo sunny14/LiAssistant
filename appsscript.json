@@ -6,6 +6,10 @@
     "https://www.googleapis.com/auth/gmail.addons.current.message.metadata",
     "https://www.googleapis.com/auth/script.external_request"
   ],
+  "urlFetchWhitelist": [
+    "https://raw.githubusercontent.com/zixia/gast/master/src/gas-tap-lib.js",
+    "https://linkedin.com/search"
+  ],
   "gmail": {
     "name": "LinkedIn assistant",
     "logoUrl": "https://pngimg.com/uploads/linkedIn/linkedIn_PNG39.png",
@@ -14,8 +18,8 @@
       "onTriggerFunction": "handleShowCard"
     }],
     "universalActions": [{
-      "text": "LinkedIn",
-      "openLink": "https://www.linkedin.com/"
+      "text": "Email to support",
+      "openLink": "TODO"
     }],
     "openLinkUrlPrefixes": [
       "https://www.linkedin.com"
