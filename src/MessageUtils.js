@@ -105,9 +105,9 @@ function getRecords(header) {
     return record;
   });
 
-/*  _.each(records, function (x) {
+  _.each(records, function (x) {
     console.log('FINAL: rec:\n'+x);
-  });*/
+  });
 
   return records;
 }
